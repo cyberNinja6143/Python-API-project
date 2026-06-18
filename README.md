@@ -5,4 +5,5 @@ Log personal goals with deadlines, milestones, and completion status
 - Install fastapi
 - Install pydantic
 - Install uvicore
-- run this in the root directory `uvicorn ./Routes/goal_tracker_routes.py:app --reload`
+- run this in the root directory `python -m uvicorn Routes.goal_tracker_routes:app --reload`
+- Go to http://localhost:8000/docs to test the endpoints.
