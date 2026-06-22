@@ -2,6 +2,7 @@
 # Bcrypt is the better library for this but for the sake of simplicity I am using hashlib.
 
 import hashlib
+import hmac
 import os
 import binascii
 
@@ -57,4 +58,4 @@ class PasswordHasher:
             iterations,
             dklen=len(stored_key),
         )
-        return hashlib.compare_digest(new_key, stored_key)
+        return hmac.compare_digest(new_key, stored_key)
