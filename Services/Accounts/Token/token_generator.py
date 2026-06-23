@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Optional, Union
 
 from Services.Storage.storage_service import StorageService
+from Models.Token.Token import Token
 
 
 class TokenGenerator:
@@ -46,11 +47,8 @@ class TokenGenerator:
             token = f"{prefix.strip()}-{token}"
 
         expires_at = datetime.utcnow() + timedelta(days=lifetime_days)
-        token_record = {
-            "token": token,
-            "user_id": user_id.strip(),
-            "expires_at": expires_at.isoformat(sep=" ", timespec="seconds"),
-        }
+        token_record = Token(token=token, user_id=user_id.strip(), expires_at=expires_at.isoformat(sep=" ", timespec="seconds"))
 
-        self.storage.save_token(token_record)
+        # save Token model as dict; Token includes its own created_at
+        self.storage.save_token(token_record.to_dict())
         return token

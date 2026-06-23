@@ -5,6 +5,7 @@
 
 from pathlib import Path
 from typing import Dict, List, Optional, Union
+from datetime import datetime
 
 from Services.Storage.storage_service import StorageService
 
@@ -36,6 +37,7 @@ class GoalManager:
             "description": description,
             "deadline": deadline,
             "iscomplete": "True" if iscomplete else "False",
+            "created_at": datetime.utcnow().isoformat(sep=" ", timespec="seconds"),
         }
         goals.append(goal)
         self.storage.save_goals(goals)
@@ -96,6 +98,7 @@ class GoalManager:
             "description": description,
             "deadline": deadline,
             "iscomplete": "True" if iscomplete else "False",
+            "created_at": datetime.utcnow().isoformat(sep=" ", timespec="seconds"),
         }
         milestones.append(milestone)
         self.storage.save_milestones(milestones)

@@ -5,6 +5,8 @@
 # Does not handle password hashing, that is done in password_hasher.
 from Services.Accounts.password_hasher import PasswordHasher
 from Services.Storage.storage_service import StorageService
+from Models.User.User import User
+from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Union
 
@@ -47,11 +49,8 @@ class UserManager:
         users = self.list_users()
         user_id = str(self._next_user_id(users))
         password_hash = PasswordHasher.hash_password(password)
-        new_user = {
-            "user_id": user_id,
-            "username": username.strip(),
-            "password_hash": password_hash,
-        }
+        # include created_at timestamp to track when the user was created
+        new_user = User(user_id=user_id, username=username.strip(), password_hash=password_hash).to_dict()
         users.append(new_user)
         self.storage.save_users(users)
         return new_user

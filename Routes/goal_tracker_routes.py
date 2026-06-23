@@ -231,3 +231,46 @@ def delete_milestone(milestone_id: str, user_id: str = Depends(_get_current_user
     if not goal_manager.delete_milestone(milestone_id):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Milestone not found")
     return {"detail": "Milestone deleted"}
+
+
+@app.get("/progress")
+def progress(user_id: str = Depends(_get_current_user_id)):
+    """Return progress for each goal belonging to the authenticated user.
+
+    Progress is computed as: completed_milestones / total_milestones * 100.
+    If a goal has no milestones the progress is 0. Results are returned as a list
+    of objects with `goal_id`, `description`, `progress_percent`, `completed`, and `total`.
+    """
+    goals = goal_manager.list_goals_for_user(user_id)
+    result = []
+    for goal in goals:
+        goal_id = goal.get("goal_id", "")
+        milestones = goal_manager.list_milestones_for_goal(goal_id)
+        total = len(milestones)
+        if total == 0:
+            progress_percent = 0.0
+            completed = 0
+        else:
+            # Milestone `iscomplete` may be stored as string "True"/"False" or boolean
+            completed = 0
+            for m in milestones:
+                val = m.get("iscomplete")
+                if isinstance(val, bool):
+                    if val:
+                        completed += 1
+                else:
+                    if str(val).strip().lower() == "true":
+                        completed += 1
+            progress_percent = (completed / total) * 100.0
+
+        result.append(
+            {
+                "goal_id": goal_id,
+                "description": goal.get("description", ""),
+                "progress_percent": round(progress_percent, 2),
+                "completed": completed,
+                "total": total,
+            }
+        )
+
+    return result
